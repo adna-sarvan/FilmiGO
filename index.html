@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FilmiGO – Tvoja Filmska Riznica</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============================================
+     NAVIGACIJA
+     ============================================ -->
+<nav class="navbar">
+    <div class="navbar-logo" onclick="loadPage('home')">
+        <span class="logo-filmi">Filmi</span><span class="logo-go">GO</span>
+        <span class="logo-dot"></span>
+    </div>
+
+    <ul class="navbar-links">
+        <li><a href="#" data-page="home"      onclick="loadPage('home');return false">Početna</a></li>
+        <li><a href="#" data-page="discover"  onclick="loadPage('discover');return false">Istraži</a></li>
+        <li><a href="#" data-page="recommend" onclick="loadPage('recommend');return false">Preporuke</a></li>
+        <li><a href="#" data-page="watchlist" onclick="loadPage('watchlist');return false">Moja Lista</a></li>
+        <li><a href="#" data-page="duel"      onclick="loadPage('duel');return false">Dvoboj</a></li>
+        <li><a href="#" data-page="random"    onclick="loadPage('random');return false">🎲 Iznenadi me</a></li>
+    </ul>
+
+    <div class="navbar-actions">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" class="search-input" placeholder="Pretraži..." autocomplete="off">
+            <div id="search-results" class="search-results"></div>
+        </div>
+
+        <button id="btn-login"    class="btn btn-ghost btn-sm"   onclick="openModal('modal-login')">Prijava</button>
+        <button id="btn-register" class="btn btn-primary btn-sm" onclick="openModal('modal-register')">Registracija</button>
+
+        <div id="user-menu" style="display:none;align-items:center;gap:0.5rem">
+            <button class="btn btn-ghost btn-sm" onclick="loadPage('profile')">
+                👤 <span id="user-label"></span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleLogout()">Odjava</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================
+     STRANICE
+     ============================================ -->
+<main style="padding-top:66px">
+
+    <!-- ========== HOME ========== -->
+    <div id="page-home" class="page">
+        <div id="hero" class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-content">
+                <div class="hero-type">🎬 Film dana</div>
+                <h1 class="hero-title">Učitavanje...</h1>
+                <p class="hero-desc"></p>
+                <div class="hero-meta">
+                    <span class="hero-rating"></span>
+                    <span class="hero-year"></span>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-lg btn-details">▶ Detalji</button>
+                    <button class="btn btn-secondary btn-lg btn-watchlist">+ Dodaj u listu</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🔥 Trending <span class="highlight">filmovi</span></h2>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="loadPage('discover')">Vidi sve →</button>
+            </div>
+            <div id="trending-movies">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top:0">
+            <div class="section-header">
+                <h2 class="section-title">📺 Trending <span class="highlight">serije</span></h2>
+                <button class="btn btn-ghost btn-sm" onclick="loadPage('recommend')">Preporuke →</button>
+            </div>
+            <div id="trending-shows">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== DISCOVER ========== -->
+    <div id="page-discover" class="page">
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">🔍 Istraži <span class="highlight">sadržaj</span></h2>
+            </div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchDiscover('movie', this)">🎬 Filmovi</button>
+                <button class="tab-btn"        onclick="switchDiscover('tv', this)">📺 Serije</button>
+                <button class="tab-btn"        onclick="switchDiscover('all', this)">🌟 Sve</button>
+            </div>
+            <div id="discover-results">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== PREPORUKE ========== -->
+    <div id="page-recommend" class="page">
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🎯 <span class="highlight">Preporuke</span></h2>
+                    <div class="section-subtitle">Pronađi savršen film za sebe</div>
+                </div>
+            </div>
+
+            <!-- Top ocijenjeni -->
+            <div style="margin-bottom:3rem">
+                <div class="section-header" style="margin-bottom:1rem">
+                    <h3 style="font-family:var(--font-display);font-size:1.3rem">⭐ Najbolje ocijenjeni svih vremena</h3>
+                </div>
+                <div id="rec-toprated">
+                    <div class="loader"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- Novi u kinima -->
+            <div style="margin-bottom:3rem">
+                <div class="section-header" style="margin-bottom:1rem">
+                    <h3 style="font-family:var(--font-display);font-size:1.3rem">🆕 Sada u kinima</h3>
+                </div>
+                <div id="rec-new">
+                    <div class="loader"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- Popularni -->
+            <div style="margin-bottom:3rem">
+                <div class="section-header" style="margin-bottom:1rem">
+                    <h3 style="font-family:var(--font-display);font-size:1.3rem">🚀 Najpopularniji trenutno</h3>
+                </div>
+                <div id="rec-popular">
+                    <div class="loader"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- Po žanru -->
+            <div>
+                <div class="section-header" style="margin-bottom:1rem">
+                    <h3 style="font-family:var(--font-display);font-size:1.3rem">🎭 Prema žanru</h3>
+                </div>
+                <div id="genre-chips" class="genre-chips"></div>
+                <div id="rec-genre">
+                    <div class="loader"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== WATCHLIST ========== -->
+    <div id="page-watchlist" class="page">
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Moja <span class="highlight">Lista</span></h2>
+                <select id="wl-filter" class="form-input" style="width:auto;padding:0.45rem 0.9rem;font-size:0.82rem" onchange="filterWatchlist()">
+                    <option value="">Sve</option>
+                    <option value="must_watch">🔥 Moram gledati</option>
+                    <option value="when_in_mood">😊 Kad budem raspoložen</option>
+                    <option value="someday">📅 Jednog dana</option>
+                </select>
+            </div>
+            <div id="watchlist-content">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== PROFIL ========== -->
+    <div id="page-profile" class="page">
+        <section class="section">
+            <div id="profile-content">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== DUEL ========== -->
+    <div id="page-duel" class="page">
+        <section class="section">
+            <div id="duel-content">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== RANDOM ========== -->
+    <div id="page-random" class="page">
+        <section class="section">
+            <div style="text-align:center;max-width:720px;margin:0 auto">
+                <h2 style="font-family:var(--font-display);font-size:3rem;letter-spacing:-0.5px;margin-bottom:0.4rem">
+                    🎲 IZNENADI ME
+                </h2>
+                <p style="color:var(--text-muted);margin-bottom:2.5rem;font-size:0.95rem">
+                    Odaberi raspoloženje – mi biramo film!
+                </p>
+
+                <div class="mood-grid">
+                    <button class="mood-btn" onclick="getRandomMovie('funny', event)">
+                        <span class="mood-icon">😂</span>
+                        <span class="mood-label">Zabavno</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('sad', event)">
+                        <span class="mood-icon">😢</span>
+                        <span class="mood-label">Emotivno</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('action', event)">
+                        <span class="mood-icon">💥</span>
+                        <span class="mood-label">Akcija</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('scary', event)">
+                        <span class="mood-icon">😱</span>
+                        <span class="mood-label">Horor</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('romance', event)">
+                        <span class="mood-icon">💕</span>
+                        <span class="mood-label">Romantično</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('scifi', event)">
+                        <span class="mood-icon">🚀</span>
+                        <span class="mood-label">Sci-Fi</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('fantasy', event)">
+                        <span class="mood-icon">🧙</span>
+                        <span class="mood-label">Fantasy</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('crime', event)">
+                        <span class="mood-icon">🔫</span>
+                        <span class="mood-label">Kriminal</span>
+                    </button>
+                    <button class="mood-btn" onclick="getRandomMovie('animation', event)">
+                        <span class="mood-icon">🎨</span>
+                        <span class="mood-label">Animacija</span>
+                    </button>
+                </div>
+
+                <div id="random-result"></div>
+            </div>
+        </section>
+    </div>
+
+</main>
+
+<!-- ============================================
+     MODALI
+     ============================================ -->
+
+<!-- Login -->
+<div id="modal-login" class="modal-overlay">
+    <div class="modal" style="position:relative">
+        <button class="modal-close" onclick="closeModal('modal-login')">✕</button>
+        <h2 class="modal-title">Prijava 🎬</h2>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="login-email" class="form-input" placeholder="vas@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lozinka</label>
+                <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+            </div>
+            <div id="login-error" style="color:var(--accent-red);font-size:0.82rem;min-height:1.2rem;margin-bottom:0.75rem"></div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Prijavi se</button>
+        </form>
+        <p style="text-align:center;margin-top:1rem;font-size:0.83rem;color:var(--text-muted)">
+            Nemaš račun?
+            <a href="#" onclick="closeModal('modal-login');openModal('modal-register')" style="color:var(--accent)">Registruj se</a>
+        </p>
+    </div>
+</div>
+
+<!-- Registracija -->
+<div id="modal-register" class="modal-overlay">
+    <div class="modal" style="position:relative">
+        <button class="modal-close" onclick="closeModal('modal-register')">✕</button>
+        <h2 class="modal-title">Registracija 🍿</h2>
+        <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label class="form-label">Korisničko ime</label>
+                <input type="text" id="reg-username" class="form-input" placeholder="filmofil123" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="reg-email" class="form-input" placeholder="vas@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lozinka</label>
+                <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 znakova" required minlength="6">
+            </div>
+            <div id="reg-error" style="color:var(--accent-red);font-size:0.82rem;min-height:1.2rem;margin-bottom:0.75rem"></div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Kreiraj račun</button>
+        </form>
+        <p style="text-align:center;margin-top:1rem;font-size:0.83rem;color:var(--text-muted)">
+            Već imaš račun?
+            <a href="#" onclick="closeModal('modal-register');openModal('modal-login')" style="color:var(--accent)">Prijavi se</a>
+        </p>
+    </div>
+</div>
+
+<!-- Detalji filma -->
+<div id="modal-details" class="modal-overlay">
+    <div class="modal" style="position:relative;max-width:720px">
+        <button class="modal-close" onclick="closeModal('modal-details')">✕</button>
+        <div id="modal-details-body">
+            <div class="loader"><div class="spinner"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Recenzija -->
+<div id="modal-review" class="modal-overlay">
+    <div class="modal" style="position:relative">
+        <button class="modal-close" onclick="closeModal('modal-review')">✕</button>
+        <h2 class="modal-title" id="modal-review-title">Dodaj recenziju</h2>
+
+        <input type="hidden" id="review-tmdb-id">
+        <input type="hidden" id="review-type">
+        <input type="hidden" id="review-title-val">
+        <input type="hidden" id="review-poster">
+
+        <div class="form-group">
+            <label class="form-label">Ocjena (1–5)</label>
+            <div class="star-rating">
+                <input type="radio" id="s5" name="rating" value="5"><label for="s5">★</label>
+                <input type="radio" id="s4" name="rating" value="4"><label for="s4">★</label>
+                <input type="radio" id="s3" name="rating" value="3"><label for="s3">★</label>
+                <input type="radio" id="s2" name="rating" value="2"><label for="s2">★</label>
+                <input type="radio" id="s1" name="rating" value="1"><label for="s1">★</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Reakcija</label>
+            <div class="emoji-picker">
+                <button type="button" class="emoji-btn selected" onclick="selectEmoji(this)">🎬</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">😍</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">😮</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">😢</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">😂</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">😱</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">🤯</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">😴</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">👑</button>
+                <button type="button" class="emoji-btn" onclick="selectEmoji(this)">🗑️</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Recenzija (opciono)</label>
+            <textarea id="review-text" class="form-input" rows="3" placeholder="Šta misliš o ovom filmu?" style="resize:vertical"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Bi li ponovo gledala?</label>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap">
+                <label style="cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.875rem">
+                    <input type="radio" name="rewatch" value="definitely"> 🔁 Definitivno
+                </label>
+                <label style="cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.875rem">
+                    <input type="radio" name="rewatch" value="maybe" checked> 🤔 Možda
+                </label>
+                <label style="cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.875rem">
+                    <input type="radio" name="rewatch" value="never"> ❌ Nikad
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group" style="display:flex;align-items:center;gap:0.5rem">
+            <input type="checkbox" id="review-spoiler" style="width:15px;height:15px;accent-color:var(--accent)">
+            <label for="review-spoiler" style="font-size:0.875rem;cursor:pointer">Recenzija sadrži spoilere ⚠️</label>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%" onclick="submitReview()">Sačuvaj recenziju ⭐</button>
+    </div>
+</div>
+
+<!-- Dodaj u watchlist -->
+<div id="modal-watchlist" class="modal-overlay">
+    <div class="modal" style="position:relative">
+        <button class="modal-close" onclick="closeModal('modal-watchlist')">✕</button>
+        <h2 class="modal-title" id="modal-wl-title">Dodaj u listu</h2>
+
+        <input type="hidden" id="wl-tmdb-id">
+        <input type="hidden" id="wl-title">
+        <input type="hidden" id="wl-poster">
+        <input type="hidden" id="wl-type">
+
+        <div class="form-group">
+            <label class="form-label">Prioritet</label>
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+                <label style="cursor:pointer;display:flex;align-items:center;gap:0.6rem;background:var(--bg-primary);padding:0.85rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border)">
+                    <input type="radio" name="wl-priority" value="must_watch" style="accent-color:var(--accent-red)">
+                    <span style="font-size:0.875rem">🔥 Moram gledati</span>
+                </label>
+                <label style="cursor:pointer;display:flex;align-items:center;gap:0.6rem;background:var(--bg-primary);padding:0.85rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border)">
+                    <input type="radio" name="wl-priority" value="when_in_mood" checked style="accent-color:var(--accent)">
+                    <span style="font-size:0.875rem">😊 Kad budem raspoložena</span>
+                </label>
+                <label style="cursor:pointer;display:flex;align-items:center;gap:0.6rem;background:var(--bg-primary);padding:0.85rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--border)">
+                    <input type="radio" name="wl-priority" value="someday" style="accent-color:var(--text-muted)">
+                    <span style="font-size:0.875rem">📅 Jednog dana</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Bilješka (opciono)</label>
+            <input type="text" id="wl-note" class="form-input" placeholder="Npr: Preporučila prijateljica">
+        </div>
+
+        <button class="btn btn-primary" style="width:100%" onclick="submitWatchlist()">Dodaj u listu 📋</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+function switchDiscover(type, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadDiscover(type);
+}
+
+function filterWatchlist() {
+    loadWatchlist();
+}
+</script>
+
+<script src="js/app.js"></script>
+</body>
+</html>
